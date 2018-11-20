@@ -29,7 +29,7 @@ class tkCalc():
 
     def checkInput(self):
         try:
-            Var = float(self.var.get())
+            float(self.var.get())
             return True
         except ValueError:
             print("Tal måste matas in!")
@@ -38,20 +38,16 @@ class tkCalc():
     def buttonPress(self, text):
         if text == "Push":
             if self.checkInput():
-                S.push(int(self.var.get()))
+                S.push(float(self.var.get()))
             self.var.set("")
 
-        elif text == "+":
-            print("Wow, plus, kanske ska implementera detta")
-            Q.enqueue(text)
-        elif text == "-":
-            print("Wow, minus, kanske ska implementera detta")
-        elif text == "*":
-            print("Wow, gånger, kanske ska implementera detta")
-        elif text == "/":
-            print("Wow, division, kanske ska implementera detta")
-        elif text == "^":
-            print("Wow, upphöjt till, kanske ska implementera detta")
+        elif text == "=":
+            doCommands()
+            if not S.empty():
+                save = S.pop()
+                self.ans.set(save)
+                S.push(save)
+
         elif text == "=":
             print("Wow, likhet, kanske ska implementera detta")
             var1 = S.pop()
@@ -62,8 +58,18 @@ class tkCalc():
             S.push(Var)
             self.ans.set(str(Var))
 
+
+        elif text in operator:
+            if not Q.full():
+                Q.enqueue(text)
+            else:
+                print("Kön är full!")
+
         elif text == "EXIT":
-            quit("Då packar vi ihop för denna gången, ha det bra!")
+            quit("Programavslutning!")
+        elif text == "Töm":
+            print("Stacken är nu tömd!")
+            clearStack()
         elif text == "Help":
             print("""Skriv in tal i inmatningsfältet. 
                     Knappen push pushar då talet till stacken.
@@ -84,13 +90,11 @@ class tkCalc():
         self.name = Label(self.row, text=TEXT)
         self.name.pack(side=SIDE, anchor=ANCHOR)
 
-    def entryIn(self, WIDTH, COLOUR, SIDE, ANCHOR):
-        self.entryBox = Entry(self.row, textvariable=self.var, bg=COLOUR)
-        self.entryBox.config(width=WIDTH)
-        self.entryBox.pack(side=SIDE, anchor=ANCHOR)
-
-    def entryOut(self, WIDTH, COLOUR, SIDE, ANCHOR):
-        self.entryBox = Entry(self.row, textvariable=self.ans, bg=COLOUR)
+    def entry(self, WIDTH, COLOUR, SIDE, ANCHOR, var, TEXTCOLOUR=None):
+        if not TEXTCOLOUR == None:
+            self.entryBox = Entry(self.row, textvariable=var, bg=COLOUR, fg=TEXTCOLOUR)
+        else:
+            self.entryBox = Entry(self.row, textvariable=var, bg=COLOUR)
         self.entryBox.config(width=WIDTH)
         self.entryBox.pack(side=SIDE, anchor=ANCHOR)
 
@@ -104,19 +108,19 @@ class tkCalc():
             self.row.pack()
 
     def mainloop(self):
-        self.root.overrideredirect(False)
+        #self.root.overrideredirect(False)
         self.window.mainloop()
 
 
 myCalc = tkCalc()
-myCalc.windowTopLevel(400, 160)
+myCalc.windowTopLevel(400, 153)
 myCalc.rowGeometry()
 myCalc.label("Inmatning: ", LEFT, N)
-myCalc.entryIn(40, "yellow", LEFT, N)
+myCalc.entry(40, "yellow", LEFT, N, myCalc.var)
 myCalc.rowPack(TOP)
 myCalc.rowGeometry()
-myCalc.label("SvarsRuta:  ", LEFT, N)
-myCalc.entryOut(40, "yellow", LEFT, N)
+myCalc.label("Svarsruta:   ", LEFT, N)
+myCalc.entry(40, "darkBlue", LEFT, N, myCalc.ans, "white")
 myCalc.rowPack()
 myCalc.rowGeometry()
 myCalc.buttons("+", lambda: myCalc.buttonPress("+"), 10, 2, LEFT)
@@ -127,7 +131,8 @@ myCalc.buttons("^", lambda: myCalc.buttonPress("^"), 10, 2, LEFT)
 myCalc.rowPack()
 myCalc.rowGeometry()
 myCalc.buttons("Push", lambda: myCalc.buttonPress("Push"), 10, 2, LEFT)
-myCalc.buttons("=", lambda: myCalc.buttonPress("="), 22, 2, LEFT)
+myCalc.buttons("=", lambda: myCalc.buttonPress("="), 10, 2, LEFT)
+myCalc.buttons("Töm", lambda: myCalc.buttonPress("Töm"), 10, 2, LEFT)
 myCalc.buttons("Help", lambda: myCalc.buttonPress("Help"), 10, 2, LEFT)
 myCalc.buttons("EXIT", lambda: myCalc.buttonPress("EXIT"), 10, 2, LEFT, "red")
 myCalc.rowPack()
