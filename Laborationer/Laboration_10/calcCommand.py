@@ -153,7 +153,10 @@ def performCalculation(c):
             elif c == '*':
                 res = op2 * op1
             elif c == '/':
-                res = op2 / op1
+                if op1 != 0:
+                    res = op2 / op1
+                else:
+                    print("Ingen division med 0 här inte!")
             elif c == '^':
                 res = op2 ** op1
             S.push(res)
